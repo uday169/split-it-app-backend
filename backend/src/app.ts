@@ -11,7 +11,7 @@ import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';
 import groupRoutes from './routes/group.routes';
 import expenseRoutes from './routes/expense.routes';
-// import balanceRoutes from './routes/balance.routes';
+import balanceRoutes from './routes/balance.routes';
 // import settlementRoutes from './routes/settlement.routes';
 
 const app: Application = express();
@@ -56,7 +56,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/groups', groupRoutes);
 app.use('/api/expenses', expenseRoutes);
-// app.use('/api/balances', balanceRoutes);
+app.use('/api/balances', balanceRoutes);
 // app.use('/api/settlements', settlementRoutes);
 
 // 404 handler
