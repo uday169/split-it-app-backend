@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import groupController from '../controllers/group.controller';
+import balanceController from '../controllers/balance.controller';
+import settlementController from '../controllers/settlement.controller';
 import { authenticate } from '../middleware/auth';
 import { validateRequest } from '../middleware/validation';
 import {
@@ -9,6 +11,8 @@ import {
   addMemberSchema,
   removeMemberSchema,
 } from '../schemas/group.schema';
+import { getGroupBalancesSchema } from '../schemas/balance.schema';
+import { getGroupSettlementsSchema } from '../schemas/settlement.schema';
 
 const router = Router();
 
@@ -42,5 +46,14 @@ router.delete(
   validateRequest(removeMemberSchema),
   groupController.removeMember
 );
+
+// GET /api/groups/:groupId/balances - Get balances for a group
+router.get('/:groupId/balances', validateRequest(getGroupBalancesSchema), balanceController.getGroupBalances);
+
+// GET /api/groups/:groupId/balances/me - Get authenticated user's balance in the group
+router.get('/:groupId/balances/me', validateRequest(getGroupBalancesSchema), balanceController.getUserBalance);
+
+// GET /api/groups/:groupId/settlements - Get settlements for a group
+router.get('/:groupId/settlements', validateRequest(getGroupSettlementsSchema), settlementController.getGroupSettlements);
 
 export default router;

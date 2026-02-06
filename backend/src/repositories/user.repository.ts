@@ -59,6 +59,29 @@ export class UserRepository {
       ...doc.data(),
     } as User;
   }
+
+  async findByIds(ids: string[]): Promise<User[]> {
+    if (ids.length === 0) {
+      return [];
+    }
+
+    const users: User[] = [];
+    const batchSize = 10;
+
+    for (let i = 0; i < ids.length; i += batchSize) {
+      const batch = ids.slice(i, i + batchSize);
+      const userSnapshot = await db.collection(COLLECTION).where('__name__', 'in', batch).get();
+
+      userSnapshot.docs.forEach((doc) => {
+        users.push({
+          id: doc.id,
+          ...doc.data(),
+        } as User);
+      });
+    }
+
+    return users;
+  }
 }
 
 export default new UserRepository();

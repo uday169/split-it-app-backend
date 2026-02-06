@@ -46,6 +46,18 @@ export class GroupMemberRepository {
     } as GroupMember;
   }
 
+  async findByUserId(userId: string): Promise<GroupMember[]> {
+    const snapshot = await db
+      .collection(COLLECTION)
+      .where('userId', '==', userId)
+      .get();
+
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as GroupMember[];
+  }
+
   async findById(id: string): Promise<GroupMember | null> {
     const doc = await db.collection(COLLECTION).doc(id).get();
 

@@ -62,6 +62,29 @@ export class GroupRepository {
     return groups.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
   }
 
+  async findByIds(ids: string[]): Promise<Group[]> {
+    if (ids.length === 0) {
+      return [];
+    }
+
+    const groups: Group[] = [];
+    const batchSize = 10;
+
+    for (let i = 0; i < ids.length; i += batchSize) {
+      const batch = ids.slice(i, i + batchSize);
+      const groupSnapshot = await db.collection(COLLECTION).where('__name__', 'in', batch).get();
+
+      groupSnapshot.docs.forEach((doc) => {
+        groups.push({
+          id: doc.id,
+          ...doc.data(),
+        } as Group);
+      });
+    }
+
+    return groups;
+  }
+
   async update(id: string, data: Partial<Omit<Group, 'id'>>): Promise<Group | null> {
     const docRef = db.collection(COLLECTION).doc(id);
     await docRef.update({
