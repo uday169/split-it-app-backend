@@ -130,12 +130,37 @@ export class ExpenseService {
     if (updates.amount !== undefined || updates.splits || updates.splitType) {
       const newAmount = updates.amount ?? expense.amount;
       const newSplitType = updates.splitType ?? expense.splitType;
-      const newSplits = updates.splits ?? (await expenseSplitRepository.findByExpenseId(expenseId)).map(s => ({
-        userId: s.userId,
-        amount: s.amount,
-      }));
+      
+      // Determine splits to use
+      let splitsToUse: SplitInput[];
+      
+      if (updates.splits) {
+        // Splits explicitly provided
+        splitsToUse = updates.splits;
+      } else if (updates.splitType && updates.splitType !== expense.splitType) {
+        // Split type changed but no splits provided - require splits for manual, or fetch members for equal
+        if (updates.splitType === 'manual') {
+          throw new AppError(
+            400,
+            'Splits must be provided when changing to manual split type',
+            'SPLITS_REQUIRED'
+          );
+        }
+        // For equal split, fetch current members from existing splits
+        const existingSplits = await expenseSplitRepository.findByExpenseId(expenseId);
+        splitsToUse = existingSplits.map(s => ({
+          userId: s.userId,
+        }));
+      } else {
+        // No change in split type or members, just recalculate amounts
+        const existingSplits = await expenseSplitRepository.findByExpenseId(expenseId);
+        splitsToUse = existingSplits.map(s => ({
+          userId: s.userId,
+          amount: s.amount,
+        }));
+      }
 
-      const calculatedSplits = this.calculateSplits(newAmount, newSplitType, newSplits);
+      const calculatedSplits = this.calculateSplits(newAmount, newSplitType, splitsToUse);
 
       // Delete old splits
       await expenseSplitRepository.deleteByExpenseId(expenseId);

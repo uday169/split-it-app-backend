@@ -87,17 +87,18 @@ export class GroupRepository {
 
   async incrementMemberCount(id: string): Promise<void> {
     const docRef = db.collection(COLLECTION).doc(id);
+    const admin = (await import('../config/firebase')).admin;
     await docRef.update({
-      memberCount: (await docRef.get()).data()?.memberCount + 1 || 1,
+      memberCount: admin.firestore.FieldValue.increment(1),
       updatedAt: new Date(),
     });
   }
 
   async decrementMemberCount(id: string): Promise<void> {
     const docRef = db.collection(COLLECTION).doc(id);
-    const currentCount = (await docRef.get()).data()?.memberCount || 0;
+    const admin = (await import('../config/firebase')).admin;
     await docRef.update({
-      memberCount: Math.max(0, currentCount - 1),
+      memberCount: admin.firestore.FieldValue.increment(-1),
       updatedAt: new Date(),
     });
   }

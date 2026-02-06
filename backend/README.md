@@ -7,11 +7,11 @@ Backend server for the Split It expense sharing application.
 - ✅ Email OTP Authentication (no passwords)
 - ✅ JWT token-based sessions
 - ✅ User management
-- Group management (in progress)
-- Expense tracking (in progress)
-- Balance calculation (in progress)
-- Settlement flow (in progress)
-- Email notifications
+- ✅ Group management
+- ✅ Expense tracking
+- ✅ Balance calculation
+- ✅ Settlement flow
+- ✅ Email notifications
 
 ## Tech Stack
 
