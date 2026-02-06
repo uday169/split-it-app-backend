@@ -2,7 +2,6 @@ import { AppError } from '../middleware/errorHandler';
 import expenseRepository from '../repositories/expense.repository';
 import expenseSplitRepository from '../repositories/expenseSplit.repository';
 import groupMemberRepository from '../repositories/groupMember.repository';
-import userRepository from '../repositories/user.repository';
 import logger from '../config/logger';
 
 interface UserBalance {

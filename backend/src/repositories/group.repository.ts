@@ -68,18 +68,16 @@ export class GroupRepository {
     }
 
     const groups: Group[] = [];
-    const batchSize = 10;
-
-    for (let i = 0; i < ids.length; i += batchSize) {
-      const batch = ids.slice(i, i + batchSize);
-      const groupSnapshot = await db.collection(COLLECTION).where('__name__', 'in', batch).get();
-
-      groupSnapshot.docs.forEach((doc) => {
+    
+    // Firestore getAll is more efficient for fetching by IDs
+    for (const id of ids) {
+      const doc = await db.collection(COLLECTION).doc(id).get();
+      if (doc.exists) {
         groups.push({
           id: doc.id,
           ...doc.data(),
         } as Group);
-      });
+      }
     }
 
     return groups;
