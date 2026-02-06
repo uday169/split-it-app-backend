@@ -78,8 +78,8 @@ export class ActivityService {
     const userIds = new Set<string>();
     allExpenses.forEach((e) => userIds.add(e.paidBy));
     allSettlements.forEach((s) => {
-      userIds.add(s.paidBy);
-      userIds.add(s.paidTo);
+      userIds.add(s.fromUserId);
+      userIds.add(s.toUserId);
     });
 
     // Fetch all users at once
@@ -103,14 +103,14 @@ export class ActivityService {
           userId: expense.paidBy,
           name: paidByUser?.name || 'Unknown User',
         },
-        createdAt: expense.createdAt,
+        createdAt: expense.createdAt.toISOString(),
       };
     });
 
     // Convert settlements to activity items
     const settlementActivities: ActivityItem[] = allSettlements.map((settlement) => {
-      const paidByUser = userMap.get(settlement.paidBy);
-      const paidToUser = userMap.get(settlement.paidTo);
+      const paidByUser = userMap.get(settlement.fromUserId);
+      const paidToUser = userMap.get(settlement.toUserId);
       const group = groupMap.get(settlement.groupId);
 
       return {
@@ -122,14 +122,14 @@ export class ActivityService {
         amount: settlement.amount,
         currency: settlement.currency,
         paidBy: {
-          userId: settlement.paidBy,
+          userId: settlement.fromUserId,
           name: paidByUser?.name || 'Unknown User',
         },
         paidTo: {
-          userId: settlement.paidTo,
+          userId: settlement.toUserId,
           name: paidToUser?.name || 'Unknown User',
         },
-        createdAt: settlement.createdAt,
+        createdAt: settlement.createdAt.toISOString(),
       };
     });
 
