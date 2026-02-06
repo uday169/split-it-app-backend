@@ -62,6 +62,27 @@ export class GroupRepository {
     return groups.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
   }
 
+  async findByIds(ids: string[]): Promise<Group[]> {
+    if (ids.length === 0) {
+      return [];
+    }
+
+    const groups: Group[] = [];
+    
+    // Firestore getAll is more efficient for fetching by IDs
+    for (const id of ids) {
+      const doc = await db.collection(COLLECTION).doc(id).get();
+      if (doc.exists) {
+        groups.push({
+          id: doc.id,
+          ...doc.data(),
+        } as Group);
+      }
+    }
+
+    return groups;
+  }
+
   async update(id: string, data: Partial<Omit<Group, 'id'>>): Promise<Group | null> {
     const docRef = db.collection(COLLECTION).doc(id);
     await docRef.update({

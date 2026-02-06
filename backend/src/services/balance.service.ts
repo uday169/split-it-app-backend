@@ -2,7 +2,6 @@ import { AppError } from '../middleware/errorHandler';
 import expenseRepository from '../repositories/expense.repository';
 import expenseSplitRepository from '../repositories/expenseSplit.repository';
 import groupMemberRepository from '../repositories/groupMember.repository';
-import userRepository from '../repositories/user.repository';
 import logger from '../config/logger';
 
 interface UserBalance {
@@ -166,6 +165,58 @@ export class BalanceService {
     }
 
     return result;
+  }
+
+  /**
+   * Get authenticated user's balance in a specific group
+   */
+  async getUserBalanceInGroup(groupId: string, userId: string): Promise<{
+    userId: string;
+    groupId: string;
+    netBalance: number;
+    owes: Array<{ userId: string; userName: string; amount: number }>;
+    owedBy: Array<{ userId: string; userName: string; amount: number }>;
+  }> {
+    // Verify user is a member
+    await this.checkGroupMembership(groupId, userId);
+
+    // Calculate all balances
+    const { simplifiedBalances } = await this.calculateGroupBalances(groupId, userId);
+
+    // Extract user's balance details
+    const owes: Array<{ userId: string; userName: string; amount: number }> = [];
+    const owedBy: Array<{ userId: string; userName: string; amount: number }> = [];
+    let netBalance = 0;
+
+    simplifiedBalances.forEach((balance) => {
+      if (balance.fromUserId === userId) {
+        // User owes someone
+        owes.push({
+          userId: balance.toUserId,
+          userName: balance.toUserName,
+          amount: balance.amount,
+        });
+        netBalance -= balance.amount;
+      } else if (balance.toUserId === userId) {
+        // Someone owes the user
+        owedBy.push({
+          userId: balance.fromUserId,
+          userName: balance.fromUserName,
+          amount: balance.amount,
+        });
+        netBalance += balance.amount;
+      }
+    });
+
+    logger.info(`User balance calculated for user ${userId} in group ${groupId}`);
+
+    return {
+      userId,
+      groupId,
+      netBalance: Math.round(netBalance * 100) / 100,
+      owes,
+      owedBy,
+    };
   }
 
   private async checkGroupMembership(groupId: string, userId: string): Promise<void> {

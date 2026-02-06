@@ -61,13 +61,15 @@ export class ExpenseController {
   }
 
   async listExpenses(
-    req: AuthRequest<{}, {}, {}, ListExpensesInput>,
+    req: AuthRequest<{ groupId?: string }, {}, {}, ListExpensesInput>,
     res: Response<ApiResponse>,
     next: NextFunction
   ): Promise<void> {
     try {
       const userId = req.user!.userId;
-      const { groupId, limit } = req.query;
+      // Support both /groups/:groupId/expenses and /expenses?groupId=
+      const groupId = req.params.groupId || req.query.groupId;
+      const { limit } = req.query;
 
       const expenses = await expenseService.getGroupExpenses(groupId, userId, limit);
 

@@ -13,6 +13,7 @@ import groupRoutes from './routes/group.routes';
 import expenseRoutes from './routes/expense.routes';
 import balanceRoutes from './routes/balance.routes';
 import settlementRoutes from './routes/settlement.routes';
+import activityRoutes from './routes/activity.routes';
 
 const app: Application = express();
 
@@ -58,6 +59,7 @@ app.use('/api/groups', groupRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/balances', balanceRoutes);
 app.use('/api/settlements', settlementRoutes);
+app.use('/api/activity', activityRoutes);
 
 // 404 handler
 app.use(notFoundHandler);

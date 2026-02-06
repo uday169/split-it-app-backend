@@ -23,6 +23,26 @@ export class BalanceController {
       next(error);
     }
   }
+
+  async getUserBalance(
+    req: AuthRequest<GetGroupBalancesInput>,
+    res: Response<ApiResponse>,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const userId = req.user!.userId;
+      const { groupId } = req.params;
+
+      const result = await balanceService.getUserBalanceInGroup(groupId, userId);
+
+      res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default new BalanceController();

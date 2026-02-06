@@ -59,6 +59,27 @@ export class UserRepository {
       ...doc.data(),
     } as User;
   }
+
+  async findByIds(ids: string[]): Promise<User[]> {
+    if (ids.length === 0) {
+      return [];
+    }
+
+    const users: User[] = [];
+    
+    // Firestore getAll is more efficient for fetching by IDs
+    for (const id of ids) {
+      const doc = await db.collection(COLLECTION).doc(id).get();
+      if (doc.exists) {
+        users.push({
+          id: doc.id,
+          ...doc.data(),
+        } as User);
+      }
+    }
+
+    return users;
+  }
 }
 
 export default new UserRepository();
