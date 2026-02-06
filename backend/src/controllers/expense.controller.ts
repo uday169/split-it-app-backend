@@ -1,6 +1,7 @@
 import { Response, NextFunction } from 'express';
 import expenseService from '../services/expense.service';
 import { AuthRequest, ApiResponse } from '../types';
+import { AppError } from '../middleware/errorHandler';
 import {
   CreateExpenseInput,
   UpdateExpenseInput,
@@ -61,7 +62,7 @@ export class ExpenseController {
   }
 
   async listExpenses(
-    req: AuthRequest<{ groupId?: string }, {}, {}, ListExpensesInput>,
+    req: AuthRequest<ListExpensesInput['params'], {}, {}, ListExpensesInput['query']>,
     res: Response<ApiResponse>,
     next: NextFunction
   ): Promise<void> {
@@ -70,6 +71,10 @@ export class ExpenseController {
       // Support both /groups/:groupId/expenses and /expenses?groupId=
       const groupId = req.params.groupId || req.query.groupId;
       const { limit } = req.query;
+
+      if (!groupId) {
+        throw new AppError(400, 'Group ID is required', 'VALIDATION_ERROR');
+      }
 
       const expenses = await expenseService.getGroupExpenses(groupId, userId, limit);
 

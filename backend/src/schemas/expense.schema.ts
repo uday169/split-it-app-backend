@@ -55,11 +55,20 @@ export const getExpenseSchema = z.object({
 });
 
 export const listExpensesSchema = z.object({
+  params: z.object({
+    groupId: z.string().min(1, 'Group ID is required').optional(),
+  }),
   query: z.object({
-    groupId: z.string().min(1, 'Group ID is required'),
+    groupId: z.string().min(1, 'Group ID is required').optional(),
     limit: z.string().regex(/^\d+$/).transform(Number).optional(),
   }),
-});
+}).refine(
+  (data) => Boolean(data.params.groupId || data.query.groupId),
+  {
+    message: 'Group ID is required',
+    path: ['groupId'],
+  }
+);
 
 export const deleteExpenseSchema = z.object({
   params: z.object({
@@ -73,5 +82,8 @@ export type UpdateExpenseInput = {
   body: z.infer<typeof updateExpenseSchema>['body'];
 };
 export type GetExpenseInput = z.infer<typeof getExpenseSchema>['params'];
-export type ListExpensesInput = z.infer<typeof listExpensesSchema>['query'];
+export type ListExpensesInput = {
+  params: z.infer<typeof listExpensesSchema>['params'];
+  query: z.infer<typeof listExpensesSchema>['query'];
+};
 export type DeleteExpenseInput = z.infer<typeof deleteExpenseSchema>['params'];
