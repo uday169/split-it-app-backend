@@ -24,8 +24,8 @@ router.get('/', validateRequest(listExpensesSchema), expenseController.listExpen
 // GET /api/expenses/:expenseId - Get expense details
 router.get('/:expenseId', validateRequest(getExpenseSchema), expenseController.getExpense);
 
-// PUT /api/expenses/:expenseId - Update expense
-router.put('/:expenseId', validateRequest(updateExpenseSchema), expenseController.updateExpense);
+// PATCH /api/expenses/:expenseId - Update expense
+router.patch('/:expenseId', validateRequest(updateExpenseSchema), expenseController.updateExpense);
 
 // DELETE /api/expenses/:expenseId - Delete expense
 router.delete('/:expenseId', validateRequest(deleteExpenseSchema), expenseController.deleteExpense);
