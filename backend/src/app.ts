@@ -6,9 +6,9 @@ import config from './config/config';
 import logger from './config/logger';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 
-// Import routes (to be created)
-// import authRoutes from './routes/auth.routes';
-// import userRoutes from './routes/user.routes';
+// Import routes
+import authRoutes from './routes/auth.routes';
+import userRoutes from './routes/user.routes';
 // import groupRoutes from './routes/group.routes';
 // import expenseRoutes from './routes/expense.routes';
 // import balanceRoutes from './routes/balance.routes';
@@ -52,8 +52,8 @@ app.get('/health', (req, res) => {
 });
 
 // API routes
-// app.use('/api/auth', authRoutes);
-// app.use('/api/users', userRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 // app.use('/api/groups', groupRoutes);
 // app.use('/api/expenses', expenseRoutes);
 // app.use('/api/balances', balanceRoutes);
