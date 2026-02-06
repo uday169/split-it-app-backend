@@ -2,6 +2,7 @@ import { Router } from 'express';
 import groupController from '../controllers/group.controller';
 import balanceController from '../controllers/balance.controller';
 import settlementController from '../controllers/settlement.controller';
+import expenseController from '../controllers/expense.controller';
 import { authenticate } from '../middleware/auth';
 import { validateRequest } from '../middleware/validation';
 import {
@@ -13,6 +14,7 @@ import {
 } from '../schemas/group.schema';
 import { getGroupBalancesSchema } from '../schemas/balance.schema';
 import { getGroupSettlementsSchema } from '../schemas/settlement.schema';
+import { listExpensesSchema } from '../schemas/expense.schema';
 
 const router = Router();
 
@@ -46,6 +48,9 @@ router.delete(
   validateRequest(removeMemberSchema),
   groupController.removeMember
 );
+
+// GET /api/groups/:groupId/expenses - Get expenses for a group
+router.get('/:groupId/expenses', validateRequest(listExpensesSchema), expenseController.listExpenses);
 
 // GET /api/groups/:groupId/balances - Get balances for a group
 router.get('/:groupId/balances', validateRequest(getGroupBalancesSchema), balanceController.getGroupBalances);
