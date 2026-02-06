@@ -25,12 +25,6 @@ export const AppNavigator = () => {
     setIsAuthenticated(!!token);
   };
 
-  // Listen for auth changes
-  useEffect(() => {
-    const interval = setInterval(checkAuth, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
   if (isAuthenticated === null) {
     return <Loading />;
   }

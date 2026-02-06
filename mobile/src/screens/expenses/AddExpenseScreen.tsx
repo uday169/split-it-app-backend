@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Alert,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -52,12 +45,7 @@ export const AddExpenseScreen: React.FC<Props> = ({ route, navigation }) => {
     loadUser();
   }, [group]);
 
-  const {
-    control,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm<AddExpenseForm>({
+  const { control, handleSubmit, watch, setValue, formState: { errors } } = useForm<AddExpenseForm>({
     resolver: zodResolver(createExpenseSchema),
     defaultValues: {
       description: '',
@@ -152,9 +140,7 @@ export const AddExpenseScreen: React.FC<Props> = ({ route, navigation }) => {
               <TouchableOpacity
                 key={member.userId}
                 style={styles.radioRow}
-                onPress={() =>
-                  control._formValues.paidBy = member.userId
-                }
+                onPress={() => setValue('paidBy', member.userId)}
               >
                 <Text style={styles.radioCircle}>
                   {watch('paidBy') === member.userId ? '◉' : '○'}

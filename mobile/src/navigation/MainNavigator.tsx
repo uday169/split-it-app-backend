@@ -1,4 +1,5 @@
 import React from 'react';
+import { Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MainTabParamList } from '../types/navigation.types';
 import { GroupStack } from './GroupStack';
@@ -26,7 +27,7 @@ export const MainNavigator = () => {
         component={GroupStack}
         options={{
           tabBarLabel: 'Groups',
-          tabBarIcon: ({ color }) => <span style={{ color }}>🏠</span>,
+          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>🏠</Text>,
         }}
       />
       <Tab.Screen
@@ -34,7 +35,7 @@ export const MainNavigator = () => {
         component={ActivityScreen}
         options={{
           tabBarLabel: 'Activity',
-          tabBarIcon: ({ color }) => <span style={{ color }}>📋</span>,
+          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>📋</Text>,
         }}
       />
       <Tab.Screen
@@ -42,7 +43,7 @@ export const MainNavigator = () => {
         component={ProfileStack}
         options={{
           tabBarLabel: 'Profile',
-          tabBarIcon: ({ color }) => <span style={{ color }}>👤</span>,
+          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>👤</Text>,
         }}
       />
     </Tab.Navigator>
