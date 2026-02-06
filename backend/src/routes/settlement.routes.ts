@@ -30,8 +30,8 @@ router.get(
   settlementController.getSettlement
 );
 
-// POST /api/settlements/:settlementId/confirm - Confirm a settlement
-router.post(
+// PATCH /api/settlements/:settlementId/confirm - Confirm a settlement
+router.patch(
   '/:settlementId/confirm',
   validateRequest(confirmSettlementSchema),
   settlementController.confirmSettlement

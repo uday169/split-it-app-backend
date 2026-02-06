@@ -29,7 +29,7 @@ export const settlementApi = {
   },
 
   confirmSettlement: async (settlementId: string) => {
-    const response = await apiClient.post<
+    const response = await apiClient.patch<
       ApiResponse<{ id: string; status: string; confirmedAt: string }>
     >(`/settlements/${settlementId}/confirm`);
     return response.data.data;
