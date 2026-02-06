@@ -30,8 +30,8 @@ describe('Expense API Integration Tests', () => {
     });
   });
 
-  describe('POST /api/expenses', () => {
-    const endpoint = '/api/expenses';
+  describe('POST /api/v1/expenses', () => {
+    const endpoint = '/api/v1/expenses';
 
     it('should create expense with equal split', async () => {
       const newExpense = {

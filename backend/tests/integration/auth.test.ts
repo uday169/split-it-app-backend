@@ -11,8 +11,8 @@ jest.mock('../../src/repositories/otp.repository');
 jest.mock('../../src/repositories/user.repository');
 
 describe('Auth API Integration Tests', () => {
-  describe('POST /api/auth/send-otp', () => {
-    const endpoint = '/api/auth/send-otp';
+  describe('POST /api/v1/auth/send-otp', () => {
+    const endpoint = '/api/v1/auth/send-otp';
     const validEmail = mockUsers.user1.email;
 
     beforeEach(() => {
@@ -92,8 +92,8 @@ describe('Auth API Integration Tests', () => {
     });
   });
 
-  describe('POST /api/auth/verify-otp', () => {
-    const endpoint = '/api/auth/verify-otp';
+  describe('POST /api/v1/auth/verify-otp', () => {
+    const endpoint = '/api/v1/auth/verify-otp';
     const validEmail = mockUsers.user1.email;
     const validOtp = '123456';
 
