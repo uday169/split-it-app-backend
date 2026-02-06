@@ -24,7 +24,7 @@ describe('CORS Configuration Tests', () => {
       expect(res.headers['access-control-allow-origin']).toBe(config.frontendUrl);
     });
 
-    it('should reject requests from unknown origins in non-development mode', async () => {
+    it('should not set CORS header for unknown origins', async () => {
       const res = await request(app)
         .get('/health')
         .set('Origin', 'http://evil-website.com')
