@@ -143,12 +143,24 @@ npm run dev
 
 ### Mobile Setup
 
+#### Option A: Using Expo Go (Quickest)
 ```bash
 cd mobile
 npm install
 npm start
 # Press 'a' for Android or 'i' for iOS
 ```
+
+#### Option B: Using Android Studio (Full Native Development)
+```bash
+cd mobile
+npm install
+npm start
+# In Android Studio: Open mobile/android and click Run
+# Or use: npm run android
+```
+
+**For detailed Android Studio setup**, see [mobile/ANDROID_STUDIO_SETUP.md](mobile/ANDROID_STUDIO_SETUP.md)
 
 ## 🔑 Key Features
 

@@ -128,6 +128,8 @@ npm install
 
 ### Running the App
 
+#### Option A: Using Expo Go (Quick Start)
+
 1. Start the backend API first (see backend README)
 
 2. Start the Expo development server:
@@ -145,6 +147,27 @@ npm run web      # For Web
 4. Scan the QR code with:
    - **iOS:** Camera app or Expo Go app
    - **Android:** Expo Go app
+
+#### Option B: Using Android Studio (Full Development)
+
+For a complete native development experience with Android Studio:
+
+1. See **[ANDROID_STUDIO_SETUP.md](./ANDROID_STUDIO_SETUP.md)** for detailed setup instructions
+2. The `android` folder contains the native Android project
+3. Open `mobile/android` in Android Studio to run, debug, and build the app
+
+Quick start:
+```bash
+# Install dependencies
+npm install
+
+# Start Metro bundler
+npm start
+
+# In Android Studio: Open mobile/android and click Run
+# Or use command line:
+npm run android
+```
 
 ## Configuration
 
