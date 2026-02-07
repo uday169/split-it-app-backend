@@ -34,5 +34,38 @@ describe('CORS Configuration Tests', () => {
       // CORS header should NOT be set for invalid origin
       expect(res.headers['access-control-allow-origin']).toBeUndefined();
     });
+
+    it('should allow requests from Android emulator (10.0.2.2) in development', async () => {
+      const res = await request(app)
+        .get('/health')
+        .set('Origin', 'http://10.0.2.2:3000')
+        .expect(200);
+
+      expect(res.body).toHaveProperty('success', true);
+      // CORS header should be set for Android emulator origin in development
+      expect(res.headers['access-control-allow-origin']).toBe('http://10.0.2.2:3000');
+    });
+
+    it('should allow requests from local network IPs (192.168.x.x) in development', async () => {
+      const res = await request(app)
+        .get('/health')
+        .set('Origin', 'http://192.168.1.100:3000')
+        .expect(200);
+
+      expect(res.body).toHaveProperty('success', true);
+      // CORS header should be set for local network IP in development
+      expect(res.headers['access-control-allow-origin']).toBe('http://192.168.1.100:3000');
+    });
+
+    it('should allow requests from local network IPs (10.x.x.x) in development', async () => {
+      const res = await request(app)
+        .get('/health')
+        .set('Origin', 'http://10.1.2.3:8081')
+        .expect(200);
+
+      expect(res.body).toHaveProperty('success', true);
+      // CORS header should be set for local network IP in development
+      expect(res.headers['access-control-allow-origin']).toBe('http://10.1.2.3:8081');
+    });
   });
 });
