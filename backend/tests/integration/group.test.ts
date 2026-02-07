@@ -23,8 +23,8 @@ describe('Group API Integration Tests', () => {
     (userRepository.findById as jest.Mock).mockResolvedValue(mockUsers.user1);
   });
 
-  describe('POST /api/groups', () => {
-    const endpoint = '/api/groups';
+  describe('POST /api/v1/groups', () => {
+    const endpoint = '/api/v1/groups';
 
     it('should create a new group', async () => {
       const newGroup = {
@@ -83,8 +83,8 @@ describe('Group API Integration Tests', () => {
     });
   });
 
-  describe('GET /api/groups', () => {
-    const endpoint = '/api/groups';
+  describe('GET /api/v1/groups', () => {
+    const endpoint = '/api/v1/groups';
 
     it('should return user groups', async () => {
       const userGroups = [mockGroup];

@@ -28,8 +28,8 @@ describe('Settlement API Integration Tests', () => {
     });
   });
 
-  describe('POST /api/settlements', () => {
-    const endpoint = '/api/settlements';
+  describe('POST /api/v1/settlements', () => {
+    const endpoint = '/api/v1/settlements';
 
     it('should create a settlement', async () => {
       const newSettlement = {
