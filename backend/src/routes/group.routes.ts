@@ -30,8 +30,8 @@ router.get('/', groupController.getUserGroups);
 // GET /api/groups/:groupId - Get group details
 router.get('/:groupId', validateRequest(getGroupSchema), groupController.getGroup);
 
-// PUT /api/groups/:groupId - Update group
-router.put('/:groupId', validateRequest(updateGroupSchema), groupController.updateGroup);
+// PATCH /api/groups/:groupId - Update group
+router.patch('/:groupId', validateRequest(updateGroupSchema), groupController.updateGroup);
 
 // DELETE /api/groups/:groupId - Delete group
 router.delete('/:groupId', validateRequest(getGroupSchema), groupController.deleteGroup);
