@@ -34,10 +34,33 @@ app.use(
         return callback(null, true);
       }
       
-      // Allow localhost origins for development
-      if (config.nodeEnv === 'development' && 
+      // Allow localhost origins for development and testing
+      if ((config.nodeEnv === 'development' || config.nodeEnv === 'test') && 
           (origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1'))) {
         return callback(null, true);
+      }
+      
+      // Allow Android emulator (10.0.2.2) in development and testing
+      if ((config.nodeEnv === 'development' || config.nodeEnv === 'test') && 
+          (origin.startsWith('http://10.0.2.2') || origin.startsWith('https://10.0.2.2'))) {
+        return callback(null, true);
+      }
+      
+      // Allow local network IPs (192.168.x.x, 10.x.x.x, 172.16-31.x.x) in development and testing
+      // This allows physical devices on the same network to access the API
+      if (config.nodeEnv === 'development' || config.nodeEnv === 'test') {
+        // More precise regex that validates IP octets are within valid range (0-255)
+        const octet = '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)';
+        const localNetworkPattern = new RegExp(
+          `^https?:\\/\\/(` +
+          `192\\.168\\.${octet}\\.${octet}|` +       // 192.168.0.0/16
+          `10\\.${octet}\\.${octet}\\.${octet}|` +   // 10.0.0.0/8
+          `172\\.(1[6-9]|2[0-9]|3[01])\\.${octet}\\.${octet}` + // 172.16.0.0/12
+          `)(:\\d+)?$`
+        );
+        if (localNetworkPattern.test(origin)) {
+          return callback(null, true);
+        }
       }
       
       // Reject all other origins
