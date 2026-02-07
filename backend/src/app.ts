@@ -3,7 +3,6 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import config from './config/config';
-import logger from './config/logger';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 
 // Import routes
@@ -21,9 +20,29 @@ const app: Application = express();
 app.use(helmet());
 
 // CORS configuration
+// Allow requests from web frontend and mobile apps
 app.use(
   cors({
-    origin: config.frontendUrl,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, Postman, curl)
+      if (!origin) {
+        return callback(null, true);
+      }
+      
+      // Allow configured frontend URL
+      if (origin === config.frontendUrl) {
+        return callback(null, true);
+      }
+      
+      // Allow localhost origins for development
+      if (config.nodeEnv === 'development' && 
+          (origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1'))) {
+        return callback(null, true);
+      }
+      
+      // Reject all other origins
+      callback(null, false);
+    },
     credentials: true,
   })
 );
