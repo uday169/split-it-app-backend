@@ -80,7 +80,7 @@ const generalLimiter = rateLimit({
   max: 100, // limit each IP to 100 requests per windowMs
   message: 'Too many requests from this IP, please try again later',
 });
-app.use('/api/', generalLimiter);
+app.use('/api/v1/', generalLimiter);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -94,14 +94,14 @@ app.get('/health', (req, res) => {
   });
 });
 
-// API routes
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/groups', groupRoutes);
-app.use('/api/expenses', expenseRoutes);
-app.use('/api/balances', balanceRoutes);
-app.use('/api/settlements', settlementRoutes);
-app.use('/api/activity', activityRoutes);
+// API routes - v1
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/groups', groupRoutes);
+app.use('/api/v1/expenses', expenseRoutes);
+app.use('/api/v1/balances', balanceRoutes);
+app.use('/api/v1/settlements', settlementRoutes);
+app.use('/api/v1/activity', activityRoutes);
 
 // 404 handler
 app.use(notFoundHandler);
