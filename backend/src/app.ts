@@ -2,7 +2,6 @@ import express, { Application } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import swaggerUi from 'swagger-ui-express';
 import config from './config/config';
 import swaggerSpec from './config/swagger';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
@@ -19,7 +18,24 @@ import activityRoutes from './routes/activity.routes';
 const app: Application = express();
 
 // Security middleware
-app.use(helmet());
+// Allow CDN assets for the /api-docs page; use strict CSP everywhere else
+app.use((req, res, next) => {
+  if (req.path === '/api-docs' || req.path === '/api-docs/') {
+    return helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'", "'unsafe-inline'", 'https://unpkg.com'],
+          styleSrc: ["'self'", "'unsafe-inline'", 'https://unpkg.com'],
+          imgSrc: ["'self'", 'data:', 'https:'],
+          connectSrc: ["'self'", 'https:'],
+          fontSrc: ["'self'", 'https://unpkg.com'],
+        },
+      },
+    })(req, res, next);
+  }
+  return helmet()(req, res, next);
+});
 
 // CORS configuration
 // Allow requests from web frontend and mobile apps
@@ -100,15 +116,41 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Swagger API documentation
-app.use(
-  '/api-docs',
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerSpec, {
-    customCss: '.swagger-ui .topbar { display: none }',
-    customSiteTitle: 'Split It API Documentation',
-  })
-);
+// Swagger API documentation – CDN-based for Vercel/serverless compatibility
+app.get('/api-docs', (req, res) => {
+  const proto = req.get('x-forwarded-proto') || req.protocol;
+  const host = req.get('host') || 'localhost';
+  const specUrl = `${proto}://${host}/api-docs.json`;
+
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.send(`<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Split It API Documentation</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css">
+    <style>.swagger-ui .topbar { display: none }</style>
+  </head>
+  <body>
+    <div id="swagger-ui"></div>
+    <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+    <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-standalone-preset.js"></script>
+    <script>
+      window.onload = function () {
+        SwaggerUIBundle({
+          url: '${specUrl}',
+          dom_id: '#swagger-ui',
+          deepLinking: true,
+          presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+          plugins: [SwaggerUIBundle.plugins.DownloadUrl],
+          layout: 'StandaloneLayout',
+        });
+      };
+    </script>
+  </body>
+</html>`);
+});
 
 // Serve raw OpenAPI JSON spec
 app.get('/api-docs.json', (req, res) => {
