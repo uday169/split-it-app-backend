@@ -2,7 +2,9 @@ import express, { Application } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import swaggerUi from 'swagger-ui-express';
 import config from './config/config';
+import swaggerSpec from './config/swagger';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 
 // Import routes
@@ -28,24 +30,28 @@ app.use(
       if (!origin) {
         return callback(null, true);
       }
-      
+
       // Allow configured frontend URL
       if (origin === config.frontendUrl) {
         return callback(null, true);
       }
-      
+
       // Allow localhost origins for development and testing
-      if ((config.nodeEnv === 'development' || config.nodeEnv === 'test') && 
-          (origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1'))) {
+      if (
+        (config.nodeEnv === 'development' || config.nodeEnv === 'test') &&
+        (origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1'))
+      ) {
         return callback(null, true);
       }
-      
+
       // Allow Android emulator (10.0.2.2) in development and testing
-      if ((config.nodeEnv === 'development' || config.nodeEnv === 'test') && 
-          (origin.startsWith('http://10.0.2.2') || origin.startsWith('https://10.0.2.2'))) {
+      if (
+        (config.nodeEnv === 'development' || config.nodeEnv === 'test') &&
+        (origin.startsWith('http://10.0.2.2') || origin.startsWith('https://10.0.2.2'))
+      ) {
         return callback(null, true);
       }
-      
+
       // Allow local network IPs (192.168.x.x, 10.x.x.x, 172.16-31.x.x) in development and testing
       // This allows physical devices on the same network to access the API
       if (config.nodeEnv === 'development' || config.nodeEnv === 'test') {
@@ -53,16 +59,16 @@ app.use(
         const octet = '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)';
         const localNetworkPattern = new RegExp(
           `^https?:\\/\\/(` +
-          `192\\.168\\.${octet}\\.${octet}|` +       // 192.168.0.0/16
-          `10\\.${octet}\\.${octet}\\.${octet}|` +   // 10.0.0.0/8
-          `172\\.(1[6-9]|2[0-9]|3[01])\\.${octet}\\.${octet}` + // 172.16.0.0/12
-          `)(:\\d+)?$`
+            `192\\.168\\.${octet}\\.${octet}|` + // 192.168.0.0/16
+            `10\\.${octet}\\.${octet}\\.${octet}|` + // 10.0.0.0/8
+            `172\\.(1[6-9]|2[0-9]|3[01])\\.${octet}\\.${octet}` + // 172.16.0.0/12
+            `)(:\\d+)?$`
         );
         if (localNetworkPattern.test(origin)) {
           return callback(null, true);
         }
       }
-      
+
       // Reject all other origins
       callback(null, false);
     },
@@ -92,6 +98,22 @@ app.get('/health', (req, res) => {
       environment: config.nodeEnv,
     },
   });
+});
+
+// Swagger API documentation
+app.use(
+  '/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    customCss: '.swagger-ui .topbar { display: none }',
+    customSiteTitle: 'Split It API Documentation',
+  })
+);
+
+// Serve raw OpenAPI JSON spec
+app.get('/api-docs.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
 });
 
 // API routes

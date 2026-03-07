@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   View,
   Text,
@@ -6,18 +6,18 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
-} from 'react-native';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { AuthStackParamList } from '../../types/navigation.types';
-import { loginSchema } from '../../schemas/validation.schemas';
-import { useSendOtp } from '../../hooks/useAuth';
-import { Button } from '../../components/common/Button';
-import { Input } from '../../components/common/Input';
-import { theme } from '../../theme/theme';
+} from "react-native";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { AuthStackParamList } from "../../types/navigation.types";
+import { loginSchema } from "../../schemas/validation.schemas";
+import { useSendOtp } from "../../hooks/useAuth";
+import { Button } from "../../components/common/Button";
+import { Input } from "../../components/common/Input";
+import { theme } from "../../theme/theme";
 
-type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
+type Props = NativeStackScreenProps<AuthStackParamList, "Login">;
 
 interface LoginForm {
   email: string;
@@ -33,23 +33,25 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
   } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
+      email: "",
     },
   });
 
   const onSubmit = async (data: LoginForm) => {
     try {
       await sendOtp.mutateAsync(data);
-      navigation.navigate('Otp', { email: data.email });
+      navigation.navigate("Otp", { email: data.email });
     } catch (error: any) {
-      const message = error.response?.data?.error?.message || 'Failed to send OTP';
-      Alert.alert('Error', message);
+      console.log("Full Error:", JSON.stringify(error, null, 2));
+      const message =
+        error.response?.data?.error?.message || "Failed to send OTP";
+      Alert.alert("Error", message);
     }
   };
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
       <View style={styles.content}>
@@ -83,7 +85,7 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
         </View>
 
         <Text style={styles.terms}>
-          By continuing, you agree to our{'\n'}Terms & Privacy Policy
+          By continuing, you agree to our{"\n"}Terms & Privacy Policy
         </Text>
       </View>
     </KeyboardAvoidingView>
@@ -97,22 +99,22 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingHorizontal: theme.spacing.lg,
   },
   logo: {
     fontSize: 64,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: theme.spacing.md,
   },
   title: {
     ...theme.typography.heading1,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: theme.spacing.xs,
   },
   subtitle: {
     ...theme.typography.body,
-    textAlign: 'center',
+    textAlign: "center",
     color: theme.colors.textSecondary,
     marginBottom: theme.spacing.xxl,
   },
@@ -121,7 +123,7 @@ const styles = StyleSheet.create({
   },
   terms: {
     ...theme.typography.caption,
-    textAlign: 'center',
+    textAlign: "center",
     color: theme.colors.textSecondary,
   },
 });

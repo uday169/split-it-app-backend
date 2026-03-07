@@ -13,10 +13,7 @@ const otpLimiter = rateLimit({
   message: 'Too many OTP requests from this IP, please try again later',
 });
 
-// POST /api/auth/send-otp - Send OTP to email
 router.post('/send-otp', otpLimiter, validateRequest(sendOtpSchema), authController.sendOtp);
-
-// POST /api/auth/verify-otp - Verify OTP and get JWT token
 router.post('/verify-otp', validateRequest(verifyOtpSchema), authController.verifyOtp);
 
 export default router;

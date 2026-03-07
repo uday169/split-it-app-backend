@@ -7,6 +7,7 @@ const PORT = config.port;
 const server = app.listen(PORT, () => {
   logger.info(`Server running in ${config.nodeEnv} mode on port ${PORT}`);
   logger.info(`Health check: http://localhost:${PORT}/health`);
+  logger.info(`API Docs: http://localhost:${PORT}/api-docs`);
 });
 
 // Graceful shutdown

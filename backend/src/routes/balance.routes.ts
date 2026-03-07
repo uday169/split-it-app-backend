@@ -9,7 +9,10 @@ const router = Router();
 // All balance routes require authentication
 router.use(authenticate);
 
-// GET /api/balances/:groupId - Get balances for a group
-router.get('/:groupId', validateRequest(getGroupBalancesSchema), balanceController.getGroupBalances);
+router.get(
+  '/:groupId',
+  validateRequest(getGroupBalancesSchema),
+  balanceController.getGroupBalances
+);
 
 export default router;
