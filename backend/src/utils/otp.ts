@@ -6,10 +6,28 @@ export const generateOtp = (): string => {
 };
 
 /**
- * Check if OTP is expired
+ * Check if OTP is expired.
+ * Handles both JavaScript Date objects and Firestore Timestamp objects
+ * (Firestore returns Timestamp from doc.data(), not a plain Date).
  */
-export const isOtpExpired = (expiresAt: Date): boolean => {
-  return new Date() > expiresAt;
+export const isOtpExpired = (
+  expiresAt: Date | { toDate(): Date } | { seconds: number }
+): boolean => {
+  let expiryMs: number;
+
+  if (expiresAt instanceof Date) {
+    expiryMs = expiresAt.getTime();
+  } else if (typeof (expiresAt as any).toDate === 'function') {
+    // Firestore Timestamp — use toDate() to get a proper JS Date
+    expiryMs = (expiresAt as { toDate(): Date }).toDate().getTime();
+  } else if (typeof (expiresAt as any).seconds === 'number') {
+    // Plain Firestore Timestamp-like object { seconds, nanoseconds }
+    expiryMs = (expiresAt as { seconds: number }).seconds * 1000;
+  } else {
+    expiryMs = new Date(expiresAt as any).getTime();
+  }
+
+  return Date.now() > expiryMs;
 };
 
 /**
