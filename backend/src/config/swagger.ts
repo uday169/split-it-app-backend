@@ -18,8 +18,12 @@ const swaggerSpec = {
   },
   servers: [
     {
+      url: 'https://split-it-app-backend.vercel.app',
+      description: 'Production server',
+    },
+    {
       url: `http://localhost:${config.port}`,
-      description: 'Development server',
+      description: 'Local server',
     },
   ],
   tags: [
