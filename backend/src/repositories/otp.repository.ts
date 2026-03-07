@@ -28,20 +28,24 @@ export class OtpRepository {
   }
 
   async findLatestByEmail(email: string): Promise<EmailOtp | null> {
+    // Avoid composite index requirement by using only equality filters
+    // and sorting in application code instead of Firestore orderBy.
     const snapshot = await db
       .collection(COLLECTION)
       .where('email', '==', email)
       .where('verified', '==', false)
-      .orderBy('createdAt', 'desc')
-      .limit(1)
       .get();
 
     if (snapshot.empty) {
       return null;
     }
 
-    const doc = snapshot.docs[0];
-    return toEmailOtp(doc.id, doc.data());
+    // Sort descending by createdAt in-app and return the most recent
+    const sorted = snapshot.docs
+      .map((doc) => toEmailOtp(doc.id, doc.data()))
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+    return sorted[0] ?? null;
   }
 
   async update(id: string, data: Partial<Omit<EmailOtp, 'id'>>): Promise<EmailOtp | null> {
@@ -60,13 +64,17 @@ export class OtpRepository {
   async countRecentAttempts(email: string, minutesAgo: number): Promise<number> {
     const timeThreshold = new Date(Date.now() - minutesAgo * 60 * 1000);
 
-    const snapshot = await db
-      .collection(COLLECTION)
-      .where('email', '==', email)
-      .where('createdAt', '>=', timeThreshold)
-      .get();
+    // Query by email only (single-field index), then filter by time in-app
+    // to avoid requiring a composite index on (email, createdAt).
+    const snapshot = await db.collection(COLLECTION).where('email', '==', email).get();
 
-    return snapshot.size;
+    return snapshot.docs.filter((doc) => {
+      const data = doc.data();
+      const createdAt: Date = data.createdAt?.toDate
+        ? data.createdAt.toDate()
+        : new Date(data.createdAt);
+      return createdAt >= timeThreshold;
+    }).length;
   }
 }
 
